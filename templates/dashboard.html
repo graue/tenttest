@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Dashboard - TentTest</title>
+  </head>
+  <body>
+    <h1>TentTest Dashboard</h1>
+    <p>You are logged in as {{ entity }}.
+       <a href="/logout">Log out</a></p>
+    <h2>Recent posts</h2>
+    <dl>
+      {% for post in posts %}
+        <dt>{{ post['entity']|e }}, {{ post['timestamp'] }}</dt>
+        <dd>{{ post['content']['text']|e }}</dd>
+      {% endfor %}
+    </dl>
+  </body>
+</html>
