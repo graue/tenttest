@@ -7,6 +7,18 @@ Not much. You can log in, see an ugly unstyled list of recent status posts in yo
 
 I wrote this for practice understanding the auth process; it will only be of interest to developers.
 
+Install notes
+---------------
+
+This is basically installed the same way as any other Flask app, so see its docs, but you will need to create the database. In Python's interactive shell:
+
+```python
+from tenttest import db
+db.create_all()
+```
+
+Also, you need to make sure `oauthCallbackURL` in the code points to the right place (hopefully localhost, as you wouldn't be deploying a test app publicly, right?). The trick I used was to reference `test.scott.mn` which doesn't actually exist, and then add that to my hosts file as 127.0.0.1.
+
 How does it work?
 -----------------------
 
