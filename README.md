@@ -19,6 +19,8 @@ db.create_all()
 
 Also, you need to make sure `oauthCallbackURL` in the code points to the right place (hopefully localhost, as you wouldn't be deploying a test app publicly, right?). The trick I used was to reference `test.scott.mn` which doesn't actually exist, and then add that to my hosts file as 127.0.0.1.
 
+Finally, copy config_sample.py to config.py and replace the secret key.
+
 How does it work?
 -----------------------
 
