@@ -30,11 +30,28 @@ class MyTentApp(TentApp):
             self.keys['registration_mac_key_id'] = user.registration_mac_key_id
         else:
             self.keys['appID'] = None
+        self.user = user
 
     def __init__(self, entity_url):
         TentApp.__init__(self, entity_url)
         self.appDetails = app_details
         self.populate_keys_from_db()
+
+    def register(self):
+        TentApp.register(self)
+
+        # update old registration details, if they exist in the DB
+        if self.user is not None:
+            self.user.app_id = self.keys['appID']
+            self.user.registration_mac_key = self.keys['registration_mac_key']
+            self.user.registration_mac_key_id = \
+                self.keys['registration_mac_key_id']
+        else:
+            self.user = models.User(self.entityUrl, self.keys['appID'],
+                                    self.keys['registration_mac_key'],
+                                    self.keys['registration_mac_key_id'])
+            db.session.add(self.user)
+        db.session.commit()
 
 
 @app.route('/')
@@ -52,11 +69,6 @@ def login():
     # register app if not already registered
     if tent.keys['appID'] is None:
         tent.register()
-        user = models.User(tent.entityUrl, tent.keys['appID'],
-                           tent.keys['registration_mac_key'],
-                           tent.keys['registration_mac_key_id'])
-        db.session.add(user)
-        db.session.commit()
 
     # registered with server, now do oauth
     approve_url = tent.getUserApprovalURL()  # sets tent.keys['state']
@@ -67,6 +79,21 @@ def login():
 
 @app.route('/oauth-callback', methods=['GET'])
 def callback():
+    if 'error' in request.args:
+        # XXX: may need more protection against XSRF attacks here
+        if 'state' not in session or 'entity' not in session:
+            return "Something weird happened. Login failed, but you " +\
+                   "weren't trying to log in.", 403
+
+        # assume the app registration credentials have been revoked,
+        # so re-register
+        # XXX: if this doesn't fix the error, it could cause a redirect loop
+        tent = MyTentApp(session['entity'])
+        tent.register()  # re-register with new app ID, etc.
+        approve_url = tent.getUserApprovalURL()  # sets tent.keys['state']
+        session['state'] = tent.keys['state']
+        return redirect(approve_url, 303)
+
     if session['state'] != request.args['state']:
         return "Error: State doesn't match", 403
     tent = MyTentApp(session['entity'])
