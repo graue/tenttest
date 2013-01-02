@@ -28,13 +28,13 @@ When someone goes to the web app, puts in `http://entity.tld` and clicks Sign In
 
 1. Checks its local database to see if it already has app registration details for `http://entity.tld`.
 
-2. If not, it registers itself with the server for `http://entity.tld` and gets a client ID (6 alphanumeric characters in tentd's implementation), MAC key ID (of the form `a:` followed by 8 hex digits in tentd's implementation), and MAC key. This happens without the owner of `http://entity.tld` needing to approve the registration or even be signed in.
+2. If not, it registers itself with the server for `http://entity.tld` and gets a client ID (16 characters in tentd's implementation), MAC key ID (of the form `a:` followed by 8 hex digits in tentd's implementation), and MAC key. This happens without the owner of `http://entity.tld` needing to approve the registration or even be signed in.
 
 3. The app builds a URL for an auth request (which, to identify the app, contains the Tent-server-provided client ID), and redirects the user trying to sign in to that URL.
 
 4. The user is required to sign in to the Tent server for `http://entity.tld`, if not already signed in.
 
-5. If the user has not used this app before, or if the app is requesting new permissions since last time the app is used, the user is shown a list of permissions the app wants and asked whether to grant or decline. 
+5. If the user has not used this app before, or if the app is requesting new permissions since last time the app was used, the user is shown a list of permissions the app wants and asked whether to grant or decline. 
 
 6. The user is redirected to the app's callback with a `code` parameter
 (32 hex digits in tentd's implementation).
